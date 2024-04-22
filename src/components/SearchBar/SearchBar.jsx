@@ -20,7 +20,7 @@ export class SearchBar extends Component {
 
   reset = () => {
     this.setState({
-      picture: '',
+      picture: null,
     });
   };
 

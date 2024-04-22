@@ -12,24 +12,28 @@ export class App extends Component {
     error: null,
   };
 
-  async componentDidMount() {
-    try {
-      this.setState({ isLoading: true });
-      const pictures = await fetchPictureWithQuery(this.state.picture);
-      this.setState({
-        pictures,
-      });
-    } catch (error) {
-      this.setState({ error });
-    } finally {
-      this.setState({
-        isLoading: false,
-      });
+  async componentDidUpdate(_, prevState) {
+    if (prevState.picture !== this.state.picture) {
+      console.log(prevState.pictures);
+      try {
+        this.setState({ isLoading: true });
+
+        const pictures = await fetchPictureWithQuery(this.state.picture);
+        this.setState({
+          pictures: pictures,
+          // picture: null,
+        });
+      } catch (error) {
+        this.setState({ error });
+      } finally {
+        this.setState({
+          isLoading: false,
+        });
+      }
     }
   }
 
   searchPicture = value => {
-    // console.log(`search bar`);
     this.setState({ picture: value });
   };
 
