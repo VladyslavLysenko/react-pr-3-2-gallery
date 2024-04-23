@@ -35,7 +35,7 @@ export class SearchBar extends Component {
           </button>
 
           <input
-            value={this.state.picture}
+            // value={this.state.picture}
             className={css.SearchFormInput}
             onChange={this.handleChange}
             type="text"

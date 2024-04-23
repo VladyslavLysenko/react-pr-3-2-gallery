@@ -3,22 +3,31 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { SearchBar } from './SearchBar/SearchBar';
 import React, { Component } from 'react';
 import { CirclesWithBar } from 'react-loader-spinner';
+import { Button } from './Button/Button';
 
 export class App extends Component {
   state = {
     pictures: [],
-    picture: null,
+    picture: '',
     isLoading: false,
     error: null,
+    page: 1,
   };
 
   async componentDidUpdate(_, prevState) {
+    if (prevState.page !== this.state.page) {
+      this.loadImages();
+    }
+
     if (prevState.picture !== this.state.picture) {
       console.log(prevState.pictures);
       try {
         this.setState({ isLoading: true });
 
-        const pictures = await fetchPictureWithQuery(this.state.picture);
+        const pictures = await fetchPictureWithQuery(
+          this.state.picture,
+          this.state.page
+        );
         this.setState({
           pictures: pictures,
           // picture: null,
@@ -35,6 +44,12 @@ export class App extends Component {
 
   searchPicture = value => {
     this.setState({ picture: value });
+  };
+
+  loadMore = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
   };
 
   render() {
@@ -58,7 +73,8 @@ export class App extends Component {
             visible={true}
           />
         )}
-        {pictures.length > 0 ? <ImageGallery pictures={pictures} /> : null};
+        {pictures.length > 0 ? <ImageGallery pictures={pictures} /> : null}
+        <Button onClick={this.loadMore} />
       </>
     );
   }
