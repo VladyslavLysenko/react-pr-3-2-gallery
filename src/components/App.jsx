@@ -1,4 +1,4 @@
-import { fetchPictureWithQuery } from 'api/api';
+import { fetchPictureLoadmore, fetchPictureWithQuery } from 'api/api';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { SearchBar } from './SearchBar/SearchBar';
 import React, { Component } from 'react';
@@ -15,8 +15,24 @@ export class App extends Component {
   };
 
   async componentDidUpdate(_, prevState) {
+    console.log(prevState.pictures);
     if (prevState.page !== this.state.page) {
-      this.loadImages();
+      try {
+        this.setState({ isLoading: true });
+        const addPictures = await fetchPictureLoadmore(
+          this.state.picture,
+          this.state.page
+        );
+        this.setState({
+          pictures: prevState.pictures.concat(addPictures),
+        });
+      } catch (error) {
+        this.setState({ error });
+      } finally {
+        this.setState({
+          isLoading: false,
+        });
+      }
     }
 
     if (prevState.picture !== this.state.picture) {
@@ -24,10 +40,7 @@ export class App extends Component {
       try {
         this.setState({ isLoading: true });
 
-        const pictures = await fetchPictureWithQuery(
-          this.state.picture,
-          this.state.page
-        );
+        const pictures = await fetchPictureWithQuery(this.state.picture);
         this.setState({
           pictures: pictures,
           // picture: null,

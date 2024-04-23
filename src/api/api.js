@@ -4,7 +4,20 @@ import axios from 'axios';
 
 axios.defaults.baseURL = `https://pixabay.com/api/?key=30662426-21982097d0559eebc608a0eec`;
 
-export const fetchPictureWithQuery = async (searchQuery, page) => {
+export const fetchPictureWithQuery = async (searchQuery) => {
+  const response = await axios.get('', {
+    params: {
+      q: searchQuery,
+      per_page: 12,
+      image_type: 'photo',
+    },
+  });
+  // console.log(response);
+  // console.log(response.data.hits);
+  return response.data.hits;
+};
+
+export const fetchPictureLoadmore= async (searchQuery, page) => {
   console.log(`page ${page} `);
   const response = await axios.get('', {
     params: {
@@ -18,3 +31,4 @@ export const fetchPictureWithQuery = async (searchQuery, page) => {
   // console.log(response.data.hits);
   return response.data.hits;
 };
+
