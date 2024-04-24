@@ -2,6 +2,7 @@ import css from 'styles.module.css';
 import { RiFindReplaceLine } from 'react-icons/ri';
 import { Component } from 'react';
 
+
 export class SearchBar extends Component {
   state = {
     picture: '',

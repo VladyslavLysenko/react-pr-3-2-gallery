@@ -1,11 +1,13 @@
+import React, { Component } from 'react';
+
 import { fetchPictureWithQuery } from 'api/api';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { SearchBar } from './SearchBar/SearchBar';
-import React, { Component } from 'react';
 import { CirclesWithBar } from 'react-loader-spinner';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
-// import { Modal } from './Modal/Modal';
+import toast, { Toaster } from 'react-hot-toast';
+
 
 export class App extends Component {
   state = {
@@ -19,7 +21,6 @@ export class App extends Component {
   };
 
   async componentDidUpdate(_, prevState) {
-
     if (
       prevState.page !== this.state.page ||
       prevState.picture !== this.state.picture
@@ -31,21 +32,25 @@ export class App extends Component {
           this.state.page
         );
 
-        // console.log(addPictures)
+        console.log(addPictures.totalHits);
 
-        const arrPhotos = [];
-        addPictures.map(item =>
-          arrPhotos.push({
-            id: item.id,
-            webformatURL: item.webformatURL,
-            largeImageURL: item.largeImageURL,
-            tags: item.tags,
-          })
-        );
-        // console.log(arrPhotos);
-        this.setState({
-          pictures: [...prevState.pictures, ...arrPhotos],
-        });
+        if (addPictures.hits.length === 0) {
+          toast.error('Sorry,we did not find...');
+        } else {
+          const arrPhotos = [];
+          addPictures.hits.map(item =>
+            arrPhotos.push({
+              id: item.id,
+              webformatURL: item.webformatURL,
+              largeImageURL: item.largeImageURL,
+              tags: item.tags,
+            })
+          );
+          console.log(arrPhotos);
+          this.setState({
+            pictures: [...prevState.pictures, ...arrPhotos],
+          });
+        }
       } catch (error) {
         this.setState({ error });
       } finally {
@@ -57,7 +62,10 @@ export class App extends Component {
   }
 
   searchPicture = value => {
-    this.setState({ picture: value });
+    this.setState({
+      // pictures:[],
+      picture: value,
+    });
   };
 
   loadMore = () => {
@@ -82,6 +90,7 @@ export class App extends Component {
     return (
       <>
         {error && <p>Whoops, something went wrong: {error.message}</p>}
+        <Toaster />
         <SearchBar onSubmit={this.searchPicture} pictures={pictures} />
         {isLoading && (
           <CirclesWithBar
@@ -92,8 +101,6 @@ export class App extends Component {
             innerCircleColor="#4fa94d"
             barColor="#4fa94d"
             ariaLabel="circles-with-bar-loading"
-            wrapperStyle={{}}
-            wrapperClass=""
             visible={true}
           />
         )}

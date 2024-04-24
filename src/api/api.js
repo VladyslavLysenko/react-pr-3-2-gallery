@@ -17,6 +17,6 @@ export const fetchPictureWithQuery = async (searchQuery, page) => {
   });
   // console.log(response);
   // console.log(response.data.hits);
-  return response.data.hits;
+  return response.data;
 };
 
