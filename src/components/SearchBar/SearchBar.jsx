@@ -9,7 +9,6 @@ export class SearchBar extends Component {
 
   handleSubmtit = e => {
     e.preventDefault();
-    // console.log(this.props);
     this.props.onSubmit(this.state.picture);
     this.reset();
   };
@@ -35,7 +34,7 @@ export class SearchBar extends Component {
           </button>
 
           <input
-            // value={this.state.picture}
+            required
             className={css.SearchFormInput}
             onChange={this.handleChange}
             type="text"

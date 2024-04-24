@@ -6,34 +6,33 @@ const modalRoot = document.querySelector('#modal-root');
 
 export class Modal extends Component {
   componentDidMount() {
-    console.log('componentDidMount Modal');
-    window.addEventListener('keydown', e => {
-      // console.log(e.code);
-      if (e.code === 'Escape') {
-        e.preventDefault();
-        console.log('Close modal');
-        // console.log(this.props);
-        return this.props.onClose();
-      }
-    });
+    window.addEventListener('keydown', this.handleKeyDown);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown);
   }
 
-  toogleModal = () => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  handleKeyDown = evt => {
+    if (evt.code === 'Escape') {
+      this.props.onClose();
+    }
   };
 
   render() {
-    const { showModal } = this.state;
-    return (
-      showModal &&
-      createPortal(
-        <div className={css.Overlay}>
-          <div className={css.Modal}>
-            <img src={this.props.image} alt="" />
-          </div>
-        </div>,
-        modalRoot
-      )
+    const { src, alt, onClose } = this.props;
+
+    return createPortal(
+      <div
+        className={css.Overlay}
+        onClick={() => {
+          onClose();
+        }}
+      >
+        <div className={css.Modal}>
+          <img src={src} alt={alt} />
+        </div>
+      </div>,
+      modalRoot
     );
   }
 }

@@ -1,9 +1,10 @@
-import { fetchPictureLoadmore, fetchPictureWithQuery } from 'api/api';
+import { fetchPictureWithQuery } from 'api/api';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { SearchBar } from './SearchBar/SearchBar';
 import React, { Component } from 'react';
 import { CirclesWithBar } from 'react-loader-spinner';
 import { Button } from './Button/Button';
+import { Modal } from './Modal/Modal';
 // import { Modal } from './Modal/Modal';
 
 export class App extends Component {
@@ -18,44 +19,19 @@ export class App extends Component {
   };
 
   async componentDidUpdate(_, prevState) {
-    // 1 запит
-    if (prevState.picture !== this.state.picture) {
-      console.log(prevState.pictures);
+
+    if (
+      prevState.page !== this.state.page ||
+      prevState.picture !== this.state.picture
+    ) {
       try {
         this.setState({ isLoading: true });
-
-        const pictures = await fetchPictureWithQuery(this.state.picture);
-        // console.log(pictures);
-        const arrPhotos = [];
-        pictures.map(item =>
-          arrPhotos.push({
-            id: item.id,
-            webformatURL: item.webformatURL,
-            largeImageURL: item.largeImageURL,
-            tags: item.tags,
-          })
-        );
-        console.log(arrPhotos);
-
-        this.setState({
-          pictures: [...arrPhotos],
-        });
-      } catch (error) {
-        this.setState({ error });
-      } finally {
-        this.setState({
-          isLoading: false,
-        });
-      }
-    }
-    // Кнопка Loadmore запит
-    if (prevState.page !== this.state.page ) {
-      try {
-        this.setState({ isLoading: true });
-        const addPictures = await fetchPictureLoadmore(
+        const addPictures = await fetchPictureWithQuery(
           this.state.picture,
           this.state.page
         );
+
+        // console.log(addPictures)
 
         const arrPhotos = [];
         addPictures.map(item =>
@@ -66,7 +42,7 @@ export class App extends Component {
             tags: item.tags,
           })
         );
-        console.log(arrPhotos);
+        // console.log(arrPhotos);
         this.setState({
           pictures: [...prevState.pictures, ...arrPhotos],
         });
@@ -90,13 +66,23 @@ export class App extends Component {
     }));
   };
 
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
+  };
+
+  shareSrcForModal = (srcLarge, altLarge) => {
+    this.setState({ largeImgData: { src: srcLarge, alt: altLarge } });
+  };
+
   render() {
-    const { pictures, isLoading, error } = this.state;
+    const { pictures, isLoading, error, showModal, largeImgData } = this.state;
 
     return (
       <>
         {error && <p>Whoops, something went wrong: {error.message}</p>}
-        <SearchBar onSubmit={this.searchPicture} />
+        <SearchBar onSubmit={this.searchPicture} pictures={pictures} />
         {isLoading && (
           <CirclesWithBar
             height="100"
@@ -113,10 +99,21 @@ export class App extends Component {
         )}
         {pictures.length > 0 ? (
           <>
-            <ImageGallery pictures={pictures} />
+            <ImageGallery
+              pictures={pictures}
+              onImgClick={this.toggleModal}
+              shareSrcForModal={this.shareSrcForModal}
+            />
             <Button onClick={this.loadMore} />
           </>
         ) : null}
+        {showModal && (
+          <Modal
+            src={largeImgData.src}
+            alt={largeImgData.alt}
+            onClose={this.toggleModal}
+          />
+        )}
       </>
     );
   }
