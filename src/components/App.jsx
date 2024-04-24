@@ -8,7 +8,6 @@ import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
 import toast, { Toaster } from 'react-hot-toast';
 
-
 export class App extends Component {
   state = {
     pictures: [],
@@ -21,6 +20,13 @@ export class App extends Component {
   };
 
   async componentDidUpdate(_, prevState) {
+    let currentPictures = prevState.pictures;
+    console.log('out,', prevState.picture, this.state.picture);
+    if (prevState.picture !== this.state.picture) {
+      console.log('in', prevState.picture, this.state.picture);
+      currentPictures = [];
+    }
+
     if (
       prevState.page !== this.state.page ||
       prevState.picture !== this.state.picture
@@ -47,8 +53,10 @@ export class App extends Component {
             })
           );
           console.log(arrPhotos);
+
+          
           this.setState({
-            pictures: [...prevState.pictures, ...arrPhotos],
+            pictures: [...currentPictures, ...arrPhotos],
           });
         }
       } catch (error) {
