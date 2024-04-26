@@ -11,34 +11,30 @@ import toast, { Toaster } from 'react-hot-toast';
 export class App extends Component {
   state = {
     pictures: [],
-    picture: '',
+    q: '',
     isLoading: false,
     error: null,
     page: 1,
     showModal: false,
     largeImgData: { src: '', alt: '' },
+    totalPages: null,
   };
 
   async componentDidUpdate(_, prevState) {
     let currentPictures = prevState.pictures;
-    console.log('out,', prevState.picture, this.state.picture);
-    if (prevState.picture !== this.state.picture) {
-      console.log('in', prevState.picture, this.state.picture);
+    if (prevState.q !== this.state.q) {
       currentPictures = [];
     }
 
-    if (
-      prevState.page !== this.state.page ||
-      prevState.picture !== this.state.picture
-    ) {
+    if (prevState.page !== this.state.page || prevState.q !== this.state.q) {
       try {
         this.setState({ isLoading: true });
         const addPictures = await fetchPictureWithQuery(
-          this.state.picture,
+          this.state.q,
           this.state.page
         );
 
-        console.log(addPictures.totalHits);
+        let totalPages = Math.ceil(addPictures.totalHits / 12);
 
         if (addPictures.hits.length === 0) {
           toast.error('Sorry,we did not find...');
@@ -52,11 +48,10 @@ export class App extends Component {
               tags: item.tags,
             })
           );
-          console.log(arrPhotos);
 
-          
           this.setState({
             pictures: [...currentPictures, ...arrPhotos],
+            totalPages: totalPages,
           });
         }
       } catch (error) {
@@ -71,8 +66,7 @@ export class App extends Component {
 
   searchPicture = value => {
     this.setState({
-      // pictures:[],
-      picture: value,
+      q: value,
     });
   };
 
@@ -93,7 +87,15 @@ export class App extends Component {
   };
 
   render() {
-    const { pictures, isLoading, error, showModal, largeImgData } = this.state;
+    const {
+      pictures,
+      isLoading,
+      error,
+      showModal,
+      largeImgData,
+      page,
+      totalPages,
+    } = this.state;
 
     return (
       <>
@@ -119,9 +121,10 @@ export class App extends Component {
               onImgClick={this.toggleModal}
               shareSrcForModal={this.shareSrcForModal}
             />
-            <Button onClick={this.loadMore} />
+            {page < totalPages ? <Button onClick={this.loadMore} /> : null}
           </>
         ) : null}
+
         {showModal && (
           <Modal
             src={largeImgData.src}

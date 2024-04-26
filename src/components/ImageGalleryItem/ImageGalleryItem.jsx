@@ -1,4 +1,5 @@
 import css from 'styles.module.css';
+import PropTypes from 'prop-types';
 
 export const ImageGalleryItem = ({
   onImgClick,
@@ -20,4 +21,10 @@ export const ImageGalleryItem = ({
       />
     </li>
   );
+};
+
+ImageGalleryItem.propTypes = {
+  picture: PropTypes.object.isRequired,
+  onImgClick: PropTypes.func,
+  shareSrcForModal: PropTypes.func,
 };

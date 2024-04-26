@@ -1,6 +1,7 @@
 import css from 'styles.module.css';
 import { RiFindReplaceLine } from 'react-icons/ri';
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 
 
 export class SearchBar extends Component {
@@ -48,3 +49,8 @@ export class SearchBar extends Component {
     );
   }
 }
+
+SearchBar.propTypes = {
+  pictures: PropTypes.array.isRequired,
+  onSubmit: PropTypes.func,
+};

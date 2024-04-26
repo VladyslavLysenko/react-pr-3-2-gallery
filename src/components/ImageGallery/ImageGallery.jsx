@@ -1,7 +1,7 @@
 import css from 'styles.module.css';
 import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
-import { nanoid } from 'nanoid'
-// model.id = nanoid() //=> "V1StGXR8_Z5jdHi6B-myT"
+import { nanoid } from 'nanoid';
+import PropTypes from 'prop-types';
 
 export const ImageGallery = ({ pictures, shareSrcForModal, onImgClick }) => {
   return (
@@ -16,4 +16,10 @@ export const ImageGallery = ({ pictures, shareSrcForModal, onImgClick }) => {
       ))}
     </ul>
   );
+};
+
+ImageGallery.propTypes = {
+  pictures: PropTypes.array.isRequired,
+  shareSrcForModal: PropTypes.func,
+  onImgClick: PropTypes.func,
 };
